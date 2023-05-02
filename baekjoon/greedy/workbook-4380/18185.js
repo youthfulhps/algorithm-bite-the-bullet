@@ -1,3 +1,6 @@
+// https://www.acmicpc.net/problem/18185
+// https://codingbutterfly.tistory.com/14
+
 const inputs = require("fs")
   .readFileSync("./input.txt")
   .toString()
@@ -17,16 +20,31 @@ function solution(inputs) {
   for (let current = 0; current < N; current++) {
     if (!factories[current]) continue;
 
-    let minBundle = Math.min(factories[current], factories[current + 1], factories[current + 2]);
-    result += minBundle * 7;
-    factories[current] -= minBundle
-    factories[current + 1] -= minBundle
-    factories[current + 2] -= minBundle
+    let minBundle = 0;
 
-    minBundle = Math.min(factories[current], factories[current + 1]);
-    result += minBundle * 5;
-    factories[current] -= minBundle
-    factories[current + 1] -= minBundle
+    if (factories[current + 1] > factories[current + 2]) {
+      minBundle = Math.min(factories[current], factories[current + 1] - factories[current + 2]);
+      result += minBundle * 5;
+      factories[current] -= minBundle;
+      factories[current + 1] -= minBundle;
+
+      minBundle = Math.min(factories[current], factories[current + 1], factories[current + 2]);
+      result += minBundle * 7;
+      factories[current] -= minBundle;
+      factories[current + 1] -= minBundle;
+      factories[current + 2] -= minBundle;
+    } else {
+      minBundle = Math.min(factories[current], factories[current + 1], factories[current + 2]);
+      result += minBundle * 7;
+      factories[current] -= minBundle
+      factories[current + 1] -= minBundle
+      factories[current + 2] -= minBundle
+
+      minBundle = Math.min(factories[current], factories[current + 1]);
+      result += minBundle * 5;
+      factories[current] -= minBundle
+      factories[current + 1] -= minBundle
+    }
 
     result += factories[current] * 3;
     factories[current] = 0;
