@@ -14,16 +14,14 @@ function solution(inputs) {
   let minus = numbers.filter(input => input < 0)
     .sort((a, b) => a - b);
 
-  let curr = 0;
   while (plus.length > M -1) {
-    const current = plus[(M-1) * curr];
+    const current = plus[0];
     result.push(current);
     plus = plus.slice(M);
   }
 
-  curr = 0;
   while (minus.length > M -1) {
-    const current = minus[(M-1) * curr];
+    const current = minus[0];
     result.push(Math.abs(current));
     minus = minus.slice(M);
   }
