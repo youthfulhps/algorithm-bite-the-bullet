@@ -1,3 +1,30 @@
+const inputs = require("fs")
+  .readFileSync("./input.txt")
+  .toString()
+  .trim()
+  .split('\n')
+  .map(Number);
+
+function solution(inputs) {
+  const N = inputs.shift();
+  const minHeap = new MinHeap();
+
+  inputs.forEach(input => minHeap.push(input));
+
+  let result = 0;
+
+  while (minHeap.heap.length > 2) {
+    const first = minHeap.pop();
+    const second = minHeap.pop();
+    const sum = first + second;
+    minHeap.push(sum);
+    result += sum;
+  }
+
+
+  return result;
+}
+
 class MinHeap {
   constructor() {
     this.heap = [null];
@@ -75,3 +102,5 @@ class MinHeap {
     return this.heap.join(' ')
   }
 }
+
+console.log(solution(inputs));
