@@ -5,6 +5,45 @@ const inputs = require("fs")
   .split('\n')
   .map(input => input.split(' ').map(Number));
 
+
+// 모두 -1, 즉 안익은 상태에서는 정답이 0이어야 함
+// 시간 초과가 난다면, queue.shift 말고 직접 구현한 queue를 사용하는 것을 추천.
+
+class Node {
+  constructor(value) {
+    this.value = value;
+    this.next = null;
+  }
+}
+
+class Queue {
+  constructor() {
+    this.head = null;
+    this.tail = null;
+    this.size = 0;
+  }
+
+  enqueue(newValue) {
+    const newNode = new Node(newValue);
+    if (this.head === null) {
+      this.head = this.tail = newNode;
+    } else {
+      this.tail.next = newNode;
+      this.tail = newNode;
+    }
+    this.size++;
+  }
+
+  dequeue() {
+    const returnValue = this.head.value;
+    this.head = this.head.next;
+    this.size--;
+
+    return returnValue;
+  }
+}
+
+
 const dx = [1, -1, 0, 0, 0, 0];
 const dy = [0, 0, 1, -1, 0, 0];
 const dz = [0, 0, 0, 0, 1, -1];
@@ -29,24 +68,34 @@ function solution(inputs) {
   const visit = Array.from({length: Z},
     () => Array.from({length: X}, () => Array(Y).fill(0)));
 
-  const queue = [];
+  for (let z = 0; z < Z; z++) {
+    for (let x = 0; x < X; x++) {
+      for (let y = 0; y < Y; y++) {
+        if (map[z][x][y] === EMPTY) {
+          visit[z][x][y] = EMPTY;
+        }
+      }
+    }
+  }
+
+  const queue = new Queue();
 
   for (let z = 0; z < Z; z++) {
     for (let x = 0; x < X; x++) {
       for (let y = 0; y < Y; y++) {
         if (map[z][x][y] === RIPE) {
-          queue.push([z, x, y]);
+          queue.enqueue([z, x, y]);
           visit[z][x][y] = 1;
         };
       }
     }
   }
 
-  while (queue.length) {
-    const batchSize = queue.length;
+  while (queue.size) {
+    const batchSize = queue.size;
 
     for (let i = 0; i < batchSize; i++) {
-      const [currentZ, currentX, currentY] = queue.shift();
+      const [currentZ, currentX, currentY] = queue.dequeue();
 
       for (let k = 0; k < 6; k++) {
         const nextZ = currentZ + dz[k];
@@ -60,12 +109,8 @@ function solution(inputs) {
         ) {
           if (!visit[nextZ][nextX][nextY]) {
             if (map[nextZ][nextX][nextY] === UNRIPE) {
-              queue.push([nextZ, nextX, nextY]);
+              queue.enqueue([nextZ, nextX, nextY]);
               visit[nextZ][nextX][nextY] = visit[currentZ][currentX][currentY] + 1;
-            }
-
-            else if (map[nextZ][nextX][nextY] === EMPTY) {
-              visit[nextZ][nextX][nextY] = -1;
             }
           }
         }
@@ -89,7 +134,7 @@ function solution(inputs) {
     }
   }
 
-  return hasZero ? -1 : max - 1;
+  return hasZero ? -1 : Math.max(max - 1, 0);
 }
 
 console.log(solution(inputs));
